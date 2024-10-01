@@ -22,34 +22,31 @@ void set_bit(long int* bits, int index, int value){
   }
 }
 
-#define X_CELL_NUM 240
-#define Y_CELL_NUM 240
+const int cell_size = 2;
+const int X_CELL_NUM = ST7789_WIDTH / cell_size;
+const int Y_CELL_NUM = ST7789_HEIGHT / cell_size;
 
 typedef struct {
   long int data[ST7789_WIDTH * ST7789_HEIGHT / (sizeof(long int)*8)];
   int data_array_num;
-  int x_num;
-  int y_num;
 } bit_matrix;
 
-void create_matrix(bit_matrix* matrix, int x_num, int y_num){
-  matrix->x_num = x_num;
-  matrix->y_num = y_num;
-  matrix->data_array_num = (int)ceil(x_num*y_num/(sizeof(long int)*8.0));
+void create_matrix(bit_matrix* matrix){
+  matrix->data_array_num = (int)ceil(X_CELL_NUM*Y_CELL_NUM/(sizeof(long int)*8.0));
   for(int i = 0; i < matrix->data_array_num; i++){
     matrix->data[i] = 0;
   }
 }
 
 int get_matrix(bit_matrix* matrix, int x, int y){
-  int index = x + y*matrix->x_num;
+  int index = x + y * X_CELL_NUM;
   int data_index = index / (sizeof(long int)*8);
   int bit_index = index % (sizeof(long int)*8);
   return get_bit(matrix->data[data_index], bit_index);
 }
 
 void set_matrix(bit_matrix* matrix, int x, int y, int value){
-  int index = x + y * matrix->x_num;
+  int index = x + y * X_CELL_NUM;
   int data_index = index / (sizeof(long int)*8);
   int bit_index = index % (sizeof(long int)*8);
   set_bit(&(matrix->data[data_index]), bit_index, value);
@@ -66,12 +63,10 @@ int main(){
 
   tft_fill_rect(0, 0, ST7789_WIDTH, ST7789_HEIGHT, BACKGROUND_COLOR);
 
-  int cell_size = 3;
-  int x_cell_count = ST7789_WIDTH/cell_size;
-  int y_cell_count = ST7789_HEIGHT/cell_size;
+  // cells 7.2KB
   bit_matrix cells, cells_before;
-  create_matrix(&cells, X_CELL_NUM, Y_CELL_NUM);
-  create_matrix(&cells_before, X_CELL_NUM, Y_CELL_NUM);
+  create_matrix(&cells);
+  create_matrix(&cells_before);
 
   for(int x = 0; x < X_CELL_NUM; x++){
     for(int y = 0; y < Y_CELL_NUM; y++){
@@ -114,8 +109,8 @@ int main(){
     }
 
     // 描画
-    for(int i_x = 0; i_x < x_cell_count; i_x++){
-      for(int i_y = 0; i_y < y_cell_count; i_y++){
+    for(int i_x = 0; i_x < X_CELL_NUM; i_x++){
+      for(int i_y = 0; i_y < Y_CELL_NUM; i_y++){
         int pos_x = i_x * cell_size;
         int pos_y = i_y * cell_size;
         if(get_matrix(&cells, i_x, i_y) == 1){
