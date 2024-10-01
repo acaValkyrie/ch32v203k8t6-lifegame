@@ -514,6 +514,30 @@ void tft_fill_rect(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint
     END_WRITE();
 }
 
+void start_write(void)
+{
+    START_WRITE();
+}
+void end_write(void)
+{
+    END_WRITE();
+}
+void send_data(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t color){
+    x += ST7789_X_OFFSET;
+    y += ST7789_Y_OFFSET;
+
+    uint16_t sz = 0;
+    for (uint16_t x = 0; x < width; x++)
+    {
+        _buffer[sz++] = color >> 8;
+        _buffer[sz++] = color;
+    }
+
+    tft_set_window(x, y, x + width - 1, y + height - 1);
+    DATA_MODE();
+    SPI_send_DMA(_buffer, sz, height);
+}
+
 /// \brief Draw a Bitmap
 /// \param x Start X coordinate
 /// \param y Start Y coordinate

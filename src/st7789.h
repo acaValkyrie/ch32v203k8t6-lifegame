@@ -102,6 +102,9 @@ void tft_draw_line(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t colo
 /// \param height Height
 /// \param color Rectangle Color
 void tft_draw_rect(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t color);
+void start_write(void);
+void end_write(void);
+void send_data(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t color);
 
 /// \brief Fill a Rectangle Area
 /// \param x Start X coordinate
