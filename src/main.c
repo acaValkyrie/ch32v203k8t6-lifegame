@@ -23,8 +23,8 @@ void set_bit(long int* bits, int index, int value){
 }
 
 const int cell_size = 2;
-const int X_CELL_NUM = ST7789_WIDTH / cell_size;
-const int Y_CELL_NUM = ST7789_HEIGHT / cell_size;
+const int x_cell_num = ST7789_WIDTH / cell_size;
+const int y_cell_num = ST7789_HEIGHT / cell_size;
 
 typedef struct {
   long int data[ST7789_WIDTH * ST7789_HEIGHT / (sizeof(long int)*8)];
@@ -32,21 +32,21 @@ typedef struct {
 } bit_matrix;
 
 void create_matrix(bit_matrix* matrix){
-  matrix->data_array_num = (int)ceil(X_CELL_NUM*Y_CELL_NUM/(sizeof(long int)*8.0));
+  matrix->data_array_num = (int)ceil(x_cell_num*y_cell_num/(sizeof(long int)*8.0));
   for(int i = 0; i < matrix->data_array_num; i++){
     matrix->data[i] = 0;
   }
 }
 
 int get_matrix(bit_matrix* matrix, int x, int y){
-  int index = x + y * X_CELL_NUM;
+  int index = x + y * x_cell_num;
   int data_index = index / (sizeof(long int)*8);
   int bit_index = index % (sizeof(long int)*8);
   return get_bit(matrix->data[data_index], bit_index);
 }
 
 void set_matrix(bit_matrix* matrix, int x, int y, int value){
-  int index = x + y * X_CELL_NUM;
+  int index = x + y * x_cell_num;
   int data_index = index / (sizeof(long int)*8);
   int bit_index = index % (sizeof(long int)*8);
   set_bit(&(matrix->data[data_index]), bit_index, value);
@@ -68,8 +68,8 @@ int main(){
   create_matrix(&cells);
   create_matrix(&cells_before);
 
-  for(int x = 0; x < X_CELL_NUM; x++){
-    for(int y = 0; y < Y_CELL_NUM; y++){
+  for(int x = 0; x < x_cell_num; x++){
+    for(int y = 0; y < y_cell_num; y++){
       int value = rand8()%2;
       set_matrix(&cells, x, y, value);
       set_matrix(&cells_before, x, y, value);
@@ -78,15 +78,15 @@ int main(){
 
   while(1){
     // Delay_Ms(100);
-    for(int y = 0; y < Y_CELL_NUM; y++){
-      for(int x = 0; x < X_CELL_NUM; x++){
+    for(int y = 0; y < y_cell_num; y++){
+      for(int x = 0; x < x_cell_num; x++){
         int count = 0;
         for(int delta_x = -1; delta_x <= 1; delta_x++){
           for(int delta_y = -1; delta_y <= 1; delta_y++){
             if(delta_x == 0 && delta_y == 0){
               continue;
             }
-            if(x+delta_x < 0 || x+delta_x >= X_CELL_NUM || y+delta_y < 0 || y+delta_y >= Y_CELL_NUM){
+            if(x+delta_x < 0 || x+delta_x >= x_cell_num || y+delta_y < 0 || y+delta_y >= y_cell_num){
               continue;
             }
             count += get_matrix(&cells_before, x+delta_x, y+delta_y);
@@ -109,8 +109,8 @@ int main(){
     }
 
     // 描画
-    for(int i_x = 0; i_x < X_CELL_NUM; i_x++){
-      for(int i_y = 0; i_y < Y_CELL_NUM; i_y++){
+    for(int i_x = 0; i_x < x_cell_num; i_x++){
+      for(int i_y = 0; i_y < y_cell_num; i_y++){
         int pos_x = i_x * cell_size;
         int pos_y = i_y * cell_size;
         if(get_matrix(&cells, i_x, i_y) == 1){
@@ -122,8 +122,8 @@ int main(){
     }
 
     // 現在のセルの状態を保存
-    for(int y = 0; y < Y_CELL_NUM; y++){
-      for(int x = 0; x < X_CELL_NUM; x++){
+    for(int y = 0; y < y_cell_num; y++){
+      for(int x = 0; x < x_cell_num; x++){
         set_matrix(&cells_before, x, y, get_matrix(&cells, x, y));
       }
     }
